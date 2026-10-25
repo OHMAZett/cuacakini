@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="CuacaKini - Aplikasi Prakiraan Cuaca Publik yang Sederhana, Akurat, Nyaman, dan Mengutamakan Privasi serta Keamanan Pengguna.">
+  <meta name="theme-color" content="#3b82f6">
+
+  <title>CuacaKini - Prakiraan Cuaca Sederhana, Cepat & Aman</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       TOP NAVIGATION BAR
+       ============================================================ -->
+  <header class="app-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo -->
+      <div class="brand" id="brandLogo" role="button" tabindex="0" title="Klik untuk segarkan cuaca">
+        <div class="brand-icon">
+          <i class="fa-solid fa-cloud-sun"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Cuaca<span>Kini</span></h1>
+          <span class="brand-tag">Akurat • Publik • Aman</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="header-controls">
+        
+        <!-- Unit Switcher (°C / °F) -->
+        <div class="unit-toggle" role="group" aria-label="Pilihan Satuan Suhu">
+          <button id="btnUnitC" class="unit-btn active" title="Ubah ke Celsius">°C</button>
+          <button id="btnUnitF" class="unit-btn" title="Ubah ke Fahrenheit">°F</button>
+        </div>
+
+        <!-- Saved Locations / Favorites Button -->
+        <button id="btnFavoritesModal" class="btn-icon" title="Kota Tersimpan / Favorit" aria-label="Buka kota favorit">
+          <i class="fa-solid fa-bookmark"></i>
+          <span class="badge" id="favCountBadge" style="display: none;">0</span>
+        </button>
+
+        <!-- Privacy & Security Information Modal Trigger -->
+        <button id="btnSecurityModal" class="btn-icon" title="Keamanan & Privasi Pengguna" aria-label="Informasi Keamanan & Privasi">
+          <i class="fa-solid fa-shield-halved"></i>
+        </button>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button id="btnThemeToggle" class="btn-theme-toggle" title="Ganti Mode Terang / Gelap" aria-label="Ganti Mode Tampilan">
+          <i class="fa-solid fa-moon icon-moon"></i>
+          <i class="fa-solid fa-sun icon-sun"></i>
+          <span id="themeToggleText">Mode Gelap</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       SEARCH & LOCATION BAR
+       ============================================================ -->
+  <div class="search-section">
+    <div class="search-wrapper">
+      <div class="search-input-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="citySearchInput" 
+          placeholder="Cari kota (contoh: Jakarta, Bandung, Surabaya, Tokyo...)" 
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="80"
+          aria-label="Cari nama kota"
+        >
+        <button id="btnClearSearch" class="btn-clear-search hidden" title="Hapus teks pencarian" aria-label="Hapus teks">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Geolocation Button -->
+      <button id="btnGeoLocation" class="btn btn-location" title="Deteksi Cuaca di Lokasi Anda Saat Ini">
+        <i class="fa-solid fa-location-crosshairs"></i>
+        <span>Lokasi Saya</span>
+      </button>
+
+      <!-- Autocomplete Dropdown List -->
+      <div id="autocompleteDropdown" class="autocomplete-dropdown hidden" role="listbox">
+        <!-- Hasil pencarian kota akan diisi dinamis oleh JavaScript -->
+      </div>
+    </div>
+
+    <!-- Quick City Pills for fast navigation -->
+    <div class="quick-cities" id="quickCitiesBar">
+      <span class="quick-label"><i class="fa-solid fa-bolt"></i> Cepat:</span>
+      <button class="city-pill" data-name="Jakarta" data-lat="-6.2088" data-lon="106.8456" data-country="Indonesia">Jakarta</button>
+      <button class="city-pill" data-name="Surabaya" data-lat="-7.2575" data-lon="112.7521" data-country="Indonesia">Surabaya</button>
+      <button class="city-pill" data-name="Bandung" data-lat="-6.9175" data-lon="107.6191" data-country="Indonesia">Bandung</button>
+      <button class="city-pill" data-name="Denpasar" data-lat="-8.6705" data-lon="115.2126" data-country="Indonesia">Bali (Denpasar)</button>
+      <button class="city-pill" data-name="Medan" data-lat="3.5952" data-lon="98.6722" data-country="Indonesia">Medan</button>
+      <button class="city-pill" data-name="Yogyakarta" data-lat="-7.7956" data-lon="110.3695" data-country="Indonesia">Yogyakarta</button>
+      <button class="city-pill" data-name="Tokyo" data-lat="35.6762" data-lon="139.6503" data-country="Jepang">Tokyo</button>
+      <button class="city-pill" data-name="Mekkah" data-lat="21.3891" data-lon="39.8579" data-country="Arab Saudi">Mekkah</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN WEATHER DASHBOARD
+       ============================================================ -->
+  <main class="main-dashboard" id="mainDashboard">
+
+    <!-- Loading Skeleton Placeholder -->
+    <div id="loadingSkeleton" class="loading-state hidden">
+      <div class="spinner"></div>
+      <p>Mengambil data cuaca terkini...</p>
+    </div>
+
+    <!-- Error State Box -->
+    <div id="errorState" class="error-state hidden">
+      <div class="error-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="errorMessageTitle">Tidak dapat memuat cuaca</h3>
+      <p id="errorMessageDesc">Pastikan koneksi internet aktif atau coba cari kota lain.</p>
+      <button id="btnRetryWeather" class="btn btn-primary">
+        <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+      </button>
+    </div>
+
+    <!-- Weather Content View (Populated by JS) -->
+    <div id="weatherContent" class="weather-content">
+      
+      <!-- HERO: Current Weather Overview Card -->
+      <section class="card current-weather-card">
+        
+        <!-- Card Top Bar: Location & Date -->
+        <div class="cw-header">
+          <div class="cw-location">
+            <div class="cw-title-row">
+              <h2 id="cwCityName">Jakarta</h2>
+              <span id="cwCountryName" class="cw-country">Indonesia</span>
+              <!-- Save to Favorites Button -->
+              <button id="btnToggleFavorite" class="btn-fav-star" title="Simpan sebagai kota favorit" aria-label="Simpan favorit">
+                <i class="fa-regular fa-star" id="favStarIcon"></i>
+              </button>
+            </div>
+            <div class="cw-datetime">
+              <span id="cwLocalTime"><i class="fa-regular fa-clock"></i> Memuat waktu...</span>
+              <span class="sep">•</span>
+              <span id="cwLocalDate">Memuat tanggal...</span>
+            </div>
+          </div>
+
+          <div class="cw-status-badge" id="cwStatusBadge">
+            <span class="pulse-dot"></span>
+            <span>Cuaca Terkini</span>
+          </div>
+        </div>
+
+        <!-- Card Main Body: Big Icon & Primary Temp -->
+        <div class="cw-body">
+          <div class="cw-icon-container">
+            <div class="cw-weather-icon" id="cwWeatherIcon">
+              <i class="fa-solid fa-sun icon-weather-main"></i>
+            </div>
+          </div>
+
+          <div class="cw-temp-container">
+            <div class="cw-temperature">
+              <span id="cwTempNumber">31</span>
+              <span class="cw-temp-unit" id="cwTempUnitSymbol">°C</span>
+            </div>
+            <div class="cw-condition" id="cwConditionText">Cerah Berawan</div>
+            <div class="cw-temp-range">
+              <span><i class="fa-solid fa-arrow-up"></i> Maks: <strong id="cwTempMax">33°</strong></span>
+              <span><i class="fa-solid fa-arrow-down"></i> Min: <strong id="cwTempMin">25°</strong></span>
+              <span class="sep">•</span>
+              <span>Terasa Seperti <strong id="cwFeelsLike">35°</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Highlight Badges: Rain probability & UV index -->
+        <div class="cw-highlights">
+          <div class="highlight-pill" id="pillRainProb">
+            <i class="fa-solid fa-umbrella"></i>
+            <span>Peluang Hujan: <strong id="cwRainChance">15%</strong></span>
+          </div>
+          <div class="highlight-pill" id="pillUvIndex">
+            <i class="fa-solid fa-sun"></i>
+            <span>Indeks UV: <strong id="cwUvIndex">6 (Tinggi)</strong></span>
+          </div>
+          <div class="highlight-pill" id="pillAirQuality">
+            <i class="fa-solid fa-wind"></i>
+            <span>Kualitas Udara: <strong id="cwAqiText">Sedang (AQI 63)</strong></span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- METRICS GRID: Detailed Weather Indicators -->
+      <section class="metrics-grid">
+        
+        <!-- Kelembapan Udara -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-humidity">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Kelembapan</span>
+            <span class="metric-value" id="metricHumidity">72%</span>
+            <span class="metric-sub" id="metricHumiditySub">Kenyamanan sedang</span>
+          </div>
+        </div>
+
+        <!-- Kecepatan & Arah Angin -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-wind">
+            <i class="fa-solid fa-wind"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Kecepatan Angin</span>
+            <span class="metric-value" id="metricWindSpeed">14 km/j</span>
+            <span class="metric-sub" id="metricWindDirection">Arah: Barat Daya</span>
+          </div>
+        </div>
+
+        <!-- Tekanan Udara -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-pressure">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Tekanan Udara</span>
+            <span class="metric-value" id="metricPressure">1011 hPa</span>
+            <span class="metric-sub" id="metricPressureSub">Kondisi Stabil</span>
+          </div>
+        </div>
+
+        <!-- Tutupan Awan -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-cloud">
+            <i class="fa-solid fa-cloud"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Tutupan Awan</span>
+            <span class="metric-value" id="metricCloudCover">40%</span>
+            <span class="metric-sub" id="metricCloudSub">Sebagian Berawan</span>
+          </div>
+        </div>
+
+        <!-- Terbit Matahari -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-sunrise">
+            <i class="fa-solid fa-sun-plant-wilt"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Matahari Terbit</span>
+            <span class="metric-value" id="metricSunrise">05:32</span>
+            <span class="metric-sub">Pagi Hari</span>
+          </div>
+        </div>
+
+        <!-- Terbenam Matahari -->
+        <div class="card metric-card">
+          <div class="metric-icon icon-sunset">
+            <i class="fa-solid fa-moon"></i>
+          </div>
+          <div class="metric-data">
+            <span class="metric-label">Matahari Terbenam</span>
+            <span class="metric-value" id="metricSunset">17:48</span>
+            <span class="metric-sub">Sore Hari</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- HOURLY FORECAST (24 Hours Carousel) -->
+      <section class="card forecast-section">
+        <div class="section-header">
+          <div class="sh-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <h3>Prakiraan Per Jam (24 Jam Ke Depan)</h3>
+          </div>
+          <span class="sh-sub">Gulir ke samping untuk melihat jam berikutnya</span>
+        </div>
+
+        <div class="hourly-scroll-container" id="hourlyForecastContainer">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </section>
+
+      <!-- 7-DAY EXTENDED FORECAST -->
+      <section class="card forecast-section">
+        <div class="section-header">
+          <div class="sh-title">
+            <i class="fa-solid fa-calendar-days"></i>
+            <h3>Prakiraan 7 Hari Ke Depan</h3>
+          </div>
+          <span class="sh-sub">Prakiraan cuaca harian dan rentang suhu</span>
+        </div>
+
+        <div class="daily-list-container" id="dailyForecastContainer">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       MODAL: FAVORITES & RECENT SEARCHES
+       ============================================================ -->
+  <div class="modal-overlay hidden" id="favoritesModal" role="dialog" aria-modal="true" aria-labelledby="favModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-bookmark modal-header-icon"></i>
+          <h3 id="favModalTitle">Kota Favorit & Riwayat</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseFavModal" aria-label="Tutup modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Section: Favorites -->
+        <div class="modal-sub-section">
+          <h4><i class="fa-solid fa-star text-gold"></i> Kota Favorit Anda</h4>
+          <div id="favoritesList" class="fav-items-list">
+            <p class="empty-state-text">Belum ada kota yang ditandai bintang. Klik ikon bintang pada kota untuk menyimpannya di sini.</p>
+          </div>
+        </div>
+
+        <!-- Section: Recent Searches -->
+        <div class="modal-sub-section" style="margin-top: 18px;">
+          <div class="sub-header-row">
+            <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pencarian Terakhir</h4>
+            <button id="btnClearRecentHistory" class="btn-text-danger" title="Hapus semua riwayat">Hapus Riwayat</button>
+          </div>
+          <div id="recentSearchesList" class="fav-items-list">
+            <p class="empty-state-text">Belum ada riwayat pencarian.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseFavModalBtn">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: PRIVACY & SECURITY COMMITMENT
+       ============================================================ -->
+  <div class="modal-overlay hidden" id="securityModal" role="dialog" aria-modal="true" aria-labelledby="secModalTitle">
+    <div class="modal-card security-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-shield-halved modal-header-icon text-secure"></i>
+          <h3 id="secModalTitle">Keamanan & Privasi Publik</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseSecModal" aria-label="Tutup modal">&times;</button>
+      </div>
+
+      <div class="modal-body security-body">
+        
+        <div class="security-feature-item">
+          <div class="sec-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="sec-text">
+            <strong>Tanpa Pelacakan Data Pribadi</strong>
+            <p>Aplikasi ini tidak melacak, tidak menyimpan cookies pihak ketiga, dan tidak menjual data riwayat pencarian Anda ke siapapun.</p>
+          </div>
+        </div>
+
+        <div class="security-feature-item">
+          <div class="sec-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="sec-text">
+            <strong>Privasi Geolocation Transparan</strong>
+            <p>Izin GPS Anda hanya digunakan sekali di browser Anda untuk mencari nama kota terdekat. Koordinat tidak pernah disimpan di server kami.</p>
+          </div>
+        </div>
+
+        <div class="security-feature-item">
+          <div class="sec-icon"><i class="fa-solid fa-code"></i></div>
+          <div class="sec-text">
+            <strong>Proteksi Sanitasi Input XSS</strong>
+            <p>Setiap kata kunci pencarian melewati sanitasi ketat untuk mencegah serangan Cross-Site Scripting (XSS) dan injeksi kode berbahaya.</p>
+          </div>
+        </div>
+
+        <div class="security-feature-item">
+          <div class="sec-icon"><i class="fa-solid fa-lock"></i></div>
+          <div class="sec-text">
+            <strong>Koneksi API Terenkripsi (HTTPS / WMO Standard)</strong>
+            <p>Seluruh komunikasi prakiraan cuaca diambil secara aman via protokol SSL/TLS terenkripsi menggunakan layanan publik terbuka Open-Meteo tanpa API Key rahasia.</p>
+          </div>
+        </div>
+
+        <!-- Local Privacy Reset Button -->
+        <div class="security-reset-box">
+          <p>Ingin membersihkan semua data preferensi, kota favorit, dan riwayat yang tersimpan di browser Anda?</p>
+          <button id="btnClearAllBrowserData" class="btn btn-danger-outline">
+            <i class="fa-solid fa-trash-can"></i> Hapus Semua Data Lokal Saya
+          </button>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnCloseSecModalBtn">Saya Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-info">
+        <p><strong>CuacaKini</strong> — Prakiraan Cuaca Publik & Terbuka untuk Seluruh Wilayah Indonesia dan Dunia.</p>
+        <span class="footer-sub">Data meteorologi bersumber dari WMO & Open-Meteo API. Aman, tanpa iklan intrusif, dan ramah privasi.</span>
+      </div>
+      <div class="footer-links">
+        <button id="footerBtnSecurity" class="link-btn"><i class="fa-solid fa-shield-halved"></i> Privasi & Keamanan</button>
+        <span class="sep">•</span>
+        <button id="footerBtnTheme" class="link-btn"><i class="fa-solid fa-circle-half-stroke"></i> Ganti Tema</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script src="script.js"></script>
+</body>
+</html>
