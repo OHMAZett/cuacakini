@@ -1,0 +1,7 @@
+# robots.txt for CuacaKini
+User-agent: *
+Allow: /
+Disallow: /.*
+Disallow: /_headers
+Disallow: /vercel.json
+
